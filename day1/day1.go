@@ -36,14 +36,10 @@ func sortAsync(list []int, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-var (
-	flagList = flag.String("list", "list.txt", "The file with the lists")
-)
-
-func main() {
+func Part1() {
 	// Reading the lists
 	flag.Parse()
-	list, originalList, err := readLists(*flagList)
+	list, originalList, err := readLists("list.txt")
 
 	if err != nil {
 		log.Fatal(err)
@@ -66,4 +62,45 @@ func main() {
 	}
 
 	fmt.Println("The total distances between your lists is:", sum)
+}
+
+func Part2() {
+	list, originalList, err := readLists("list.txt")
+
+	if err != nil {
+		log.Fatal(err)
+		fmt.Println("Error reading the lists")
+		os.Exit(1)
+		return
+	}
+
+	starMap := make(map[int]int)
+
+	for _, star := range originalList {
+		starMap[star]++
+	}
+
+	sum := 0
+	for _, similarityNum := range list {
+		sum += similarityNum * starMap[similarityNum]
+	}
+
+	fmt.Println("The the similarity score is:", sum)
+}
+
+var (
+	partFlag = flag.Int("part", 1, "The part of the challenge code")
+)
+
+func main() {
+	flag.Parse()
+
+	switch *partFlag {
+	case 1:
+		Part1()
+	case 2:
+		Part2()
+	default:
+		fmt.Println("No existe ese numero de parte del reto")
+	}
 }

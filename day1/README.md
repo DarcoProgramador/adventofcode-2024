@@ -5,7 +5,7 @@ El archivo `day1.go` contiene la solución para el primer día del desafío. Est
 
 Para ejecutar el código, utiliza el siguiente comando:
 ```
-go run day1.go -list <nombre_del_archivo>
+go run day1.go -part <Numero de la parte>
 ```
 > [!NOTE]
 > Pudes ejecutarlo el codigo sin la flag si tienes list.txt ya que por defecto la flag vacia manda el valor de list.txt.
