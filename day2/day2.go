@@ -72,6 +72,21 @@ func isSafeReport(report []int32) bool {
 	}
 }
 
+func isSafeReportWithSingleBad(report []int32) bool {
+	switch {
+	case checkReportWithSingleBad(report, isIncresing, 3, 0, 1):
+		return true
+	case checkReportWithSingleBad(report, isDecresing, 3, 0, 1):
+		return true
+	case checkReportWithSingleBad(report, isIncresing, 3, 0, 0):
+		return true
+	case checkReportWithSingleBad(report, isDecresing, 3, 0, 0):
+		return true
+	default:
+		return false
+	}
+}
+
 func checkReport(report []int32, check func(int32, int32) bool, diference int32) bool {
 
 	for i := 0; i < len(report)-1; i++ {
@@ -86,8 +101,30 @@ func checkReport(report []int32, check func(int32, int32) bool, diference int32)
 	return true
 }
 
-func safeAndUnsafeReports(reports [][]int32) (safe, unsafe int32) {
+func checkReportWithSingleBad(report []int32, check func(int32, int32) bool, diference, attemp int32, rmIndex int) bool {
+	if attemp > 1 {
+		return false
+	}
 
+	tmp := make([]int32, len(report))
+	copy(tmp, report)
+
+	for i := 0; i < len(tmp)-1; i++ {
+
+		if !check(tmp[i], tmp[i+1]) {
+			tmp = remove(tmp, i+rmIndex)
+			return checkReportWithSingleBad(tmp, check, diference, attemp+1, rmIndex)
+		}
+		if int32(math.Abs(float64(tmp[i])-float64(tmp[i+1]))) > diference {
+			tmp = remove(tmp, i+rmIndex)
+			return checkReportWithSingleBad(tmp, check, diference, attemp+1, rmIndex)
+		}
+	}
+
+	return true
+}
+
+func safeAndUnsafeReports(reports [][]int32) (safe, unsafe int32) {
 	for _, report := range reports {
 		if isSafeReport(report) {
 			safe++
@@ -96,6 +133,22 @@ func safeAndUnsafeReports(reports [][]int32) (safe, unsafe int32) {
 		unsafe++
 	}
 	return
+}
+
+func safeAndUnsafeReportsWithSingleBad(reports [][]int32) (safe, unsafe int32) {
+
+	for _, report := range reports {
+		if isSafeReportWithSingleBad(report) {
+			safe++
+			continue
+		}
+		unsafe++
+	}
+	return
+}
+
+func remove(slice []int32, s int) []int32 {
+	return append(slice[:s], slice[s+1:]...)
 }
 
 func main() {
@@ -107,6 +160,11 @@ func main() {
 		return
 	}
 
+	// day 2 part 1
 	safe, _ := safeAndUnsafeReports(reports)
 	fmt.Println("safe reports are:", safe)
+
+	//day 2 part 2
+	safeTolerant, _ := safeAndUnsafeReportsWithSingleBad(reports)
+	fmt.Println("safe report with 1 tolerance are:", safeTolerant)
 }
