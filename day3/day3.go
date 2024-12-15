@@ -26,16 +26,32 @@ func proceesMul(strMul string) int {
 }
 
 func obtainMulStr(data string) []string {
-	r, _ := regexp.Compile("mul\\(\\d+,\\d+\\)")
+	r := regexp.MustCompile(`(do\(\))|(don't\(\))|(mul\(\d+,\d+\))`)
 
 	mulStrSlice := r.FindAllString(data, -1)
 
-	return mulStrSlice
+	do := true
+
+	var mulDoSlice []string
+
+	for _, doStr := range mulStrSlice {
+		switch doStr {
+		case "do()":
+			do = true
+		case "don't()":
+			do = false
+
+		default:
+			if do {
+				mulDoSlice = append(mulDoSlice, doStr)
+			}
+		}
+	}
+	return mulDoSlice
 }
 
 func main() {
-
-	data, err := readFile("input.txt")
+	data, err := readFile("input2.txt")
 
 	if err != nil {
 		log.Fatal(err)
@@ -49,5 +65,6 @@ func main() {
 	for _, strMul := range mulStrSlice {
 		sum += proceesMul(strMul)
 	}
+
 	fmt.Println("The sum of all multiplications are:", sum)
 }
